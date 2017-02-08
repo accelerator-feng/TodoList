@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <title>To-do List</title>
+    <link rel="stylesheet" type="text/css" href="node_modules/normalize.css/normalize.css">
+    <link rel="stylesheet" type="text/css" href="node_modules/jquery-datetimepicker/build/jquery.datetimepicker.min.css">
+    <link rel="stylesheet" type="text/css" href="main.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>To-do List</h1>
+        <section class="add-task">
+            <form>
+                <input type="text" placeholder="e.g. 学习Vue2.0">
+                <button class="clear" type='button'>清空</button>
+                <button>添加</button>
+            </form>
+        </section>
+        <section class="task-list">
+        </section>
+        <div class="mask"></div>
+        <section class="task-detail">
+        </section>
+    </div>
+    <audio src='alert.mp3' class='hint-tone'></audio>
+    <script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="node_modules/jquery-datetimepicker/build/jquery.datetimepicker.full.min.js"></script>
+    <script type="text/javascript" src="node_modules/store/store.min.js"></script>
+    <script type="text/javascript" src="main.js"></script>
+</body>
+
+</html>
