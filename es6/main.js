@@ -25,7 +25,6 @@
      $('body').click(e => {
          const tg = e.target,
              className = tg.className,
-             index = tg.parentNode.id,
              action = {
                  delete: removeTask,
                  detail: showDetail,
@@ -33,7 +32,7 @@
                  checkbox: compeleteTask,
                  clear: clear,
              };
-         action[className] ? action[className](index) : null;
+         if(action[className]) action[className](tg.parentNode.id);
      });
 
      function init() {
@@ -57,15 +56,15 @@
      }
 
      function removeTask(index) {
-         const callback = index => {
-             taskList.splice(index, 1);
+         const callback = e => {
+             taskList.splice(e.data.index, 1);
              rmAlert();
              refresh();
          };
-         myAlert(`删除 '${taskList[index].title}' `, callback);
+         myAlert(`删除 '${taskList[index].title}' `, callback, { index });
      }
 
-     function myAlert(text, callback) {
+     function myAlert(text, callback, data = {}) {
          const alertText = `<div class="alert">
                                 <p class='alertText'>确定${text}?</p>
                                 <button class='confirm' type='button'>确定</button>
@@ -73,7 +72,7 @@
                             </div>`;
          $mask.show();
          $('.container').append($(alertText));
-         $('.confirm').click(callback);
+         $('.confirm').click(data, callback);
          $('.cancel').click(rmAlert);
      }
 
@@ -142,7 +141,7 @@
                          <span>提醒时间</span>
                          <input type='text' id='date' value='${item.date}'>
                          <button type='button' class='update'>更新</button>`;
-         $taskDetail.append($(template)).css('top', index * 46 + 60 + 'px');
+         $taskDetail.append($(template)).css('top', index * 44 + 44 + 'px');
          $('#date').datetimepicker();
          update(item);
      }
@@ -181,7 +180,7 @@
 
      function notice(item) {
          $('.hint-tone')[0].play();
-         $('body').append($(`<div class="notice"><span>${item.title}时间已到</span>
+         $('body').prepend($(`<div class="notice"><span>'${item.title}' 时间已到</span>
                                  <button type="button">知道了</button>
                              </div>`));
          $('.notice button').click(function() { $(this).parent().remove(); });
