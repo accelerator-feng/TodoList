@@ -35,20 +35,20 @@ $(function () {
             checkbox: compeleteTask,
             clear: clear
         };
-        if (action[className]) action[className](tg.parentNode.id);
+        if (action[className]) action[className]($(tg).parent().data('index'));
     });
-
+    // 初始化任务列表
     function init() {
         taskList = store.get('taskList') || [];
         if (taskList.length) renderTaskList();
         remindCheck();
     }
-
+    // 添加任务
     function addTask(newTask) {
         taskList.unshift(newTask);
         refresh();
     }
-
+    // 清空任务列表
     function clear() {
         var callback = function callback() {
             rmAlert();
@@ -57,7 +57,7 @@ $(function () {
         };
         myAlert('清空所有任务', callback);
     }
-
+    // 删除任务
     function removeTask(index) {
         var callback = function callback(e) {
             taskList.splice(e.data.index, 1);
@@ -66,7 +66,7 @@ $(function () {
         };
         myAlert('\u5220\u9664 \'' + taskList[index].title + '\' ', callback, { index: index });
     }
-
+    // 自定义alert
     function myAlert(text, callback) {
         var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
@@ -76,24 +76,24 @@ $(function () {
         $('.confirm').click(data, callback);
         $('.cancel').click(rmAlert);
     }
-
+    // 显示任务描述，日期
     function showDetail(index) {
         renderTaskDetail(index);
         $mask.show();
         $taskDetail.show();
     }
-
+    // 隐藏遮罩层
     function hideMask() {
         $mask.hide();
         $taskDetail.hide().html('');
         rmAlert();
     }
-
+    // 隐藏alert
     function rmAlert() {
         $mask.hide();
         $('.alert').remove();
     }
-
+    // 标记任务完成
     function compeleteTask(index) {
         var i = 0,
             task = taskList[index];
@@ -102,83 +102,66 @@ $(function () {
         } else {
             task.complete = true;
             taskList.splice(index, 1);
-            var _iteratorNormalCompletion = true;
-            var _didIteratorError = false;
-            var _iteratorError = undefined;
-
-            try {
-                for (var _iterator = taskList.entries()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                    var _step$value = _slicedToArray(_step.value, 2),
-                        _index = _step$value[0],
-                        elem = _step$value[1];
-
-                    if (!elem.complete) i++;
-                }
-            } catch (err) {
-                _didIteratorError = true;
-                _iteratorError = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion && _iterator.return) {
-                        _iterator.return();
-                    }
-                } finally {
-                    if (_didIteratorError) {
-                        throw _iteratorError;
-                    }
-                }
+            for (var elem in taskList) {
+                if (!elem.complete) i++;
             }
-
             taskList.splice(i, 0, task);
         }
         refresh();
     }
-
+    // 更新localstorage
     function refresh() {
         store.set('taskList', taskList);
         renderTaskList();
     }
-
+    // 渲染任务列表
     function renderTaskList() {
-        var task = '';
-        var _iteratorNormalCompletion2 = true;
-        var _didIteratorError2 = false;
-        var _iteratorError2 = undefined;
+        var listA = '',
+            listB = '',
+            list = '';
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
 
         try {
-            for (var _iterator2 = taskList.entries()[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                var _step2$value = _slicedToArray(_step2.value, 2),
-                    index = _step2$value[0],
-                    elem = _step2$value[1];
+            for (var _iterator = taskList.entries()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                var _step$value = _slicedToArray(_step.value, 2),
+                    index = _step$value[0],
+                    elem = _step$value[1];
 
-                task += taskTemplate(elem, index);
+                if (!elem.complete) {
+                    listA += taskTemplate(elem, index);
+                } else {
+                    listB += taskTemplate(elem, index);
+                }
             }
         } catch (err) {
-            _didIteratorError2 = true;
-            _iteratorError2 = err;
+            _didIteratorError = true;
+            _iteratorError = err;
         } finally {
             try {
-                if (!_iteratorNormalCompletion2 && _iterator2.return) {
-                    _iterator2.return();
+                if (!_iteratorNormalCompletion && _iterator.return) {
+                    _iterator.return();
                 }
             } finally {
-                if (_didIteratorError2) {
-                    throw _iteratorError2;
+                if (_didIteratorError) {
+                    throw _iteratorError;
                 }
             }
         }
 
-        $('.task-list').html('').append($(task));
+        list = listA + listB;
+        $('.task-list').html('').append($(list));
         $('task-item').removeClass('complete');
         $("[checked]").parent().addClass('complete');
     }
-
+    // 任务模板
     function taskTemplate(item, index) {
         var checked = item.complete ? "checked" : '',
-            template = '<div class=\'task-item\' id=' + index + '>\n                             <input type=\'checkbox\' class=\'checkbox\' ' + checked + '>\n                             <span class=\'task-title\'>' + item.title + '</span>\n                             <span class=\'delete\'>\u5220\u9664</span>\n                             <span class=\'detail\'>\u8BE6\u7EC6</span>\n                         </div>';
+            template = '<div class=\'task-item\' data-index=' + index + '>\n                             <input type=\'checkbox\' class=\'checkbox\' ' + checked + '>\n                             <span class=\'task-title\'>' + item.title + '</span>\n                             <span class=\'delete\'>\u5220\u9664</span>\n                             <span class=\'detail\'>\u8BE6\u7EC6</span>\n                         </div>';
         return template;
     }
-
+    // 任务详情模板
     function renderTaskDetail(index) {
         var item = taskList[index],
             template = '<div class=\'detail-title\'>' + item.title + '</div>\n                         <input type="text" value=\'' + item.title + '\' id=\'title\'>\n                         <textarea id=\'desc\'>' + item.desc + '</textarea>\n                         <span>\u63D0\u9192\u65F6\u95F4</span>\n                         <input type=\'text\' id=\'date\' value=\'' + item.date + '\'>\n                         <button type=\'button\' class=\'update\'>\u66F4\u65B0</button>';
@@ -186,7 +169,7 @@ $(function () {
         $('#date').datetimepicker();
         update(item);
     }
-
+    // 修改任务
     function update(item) {
         $('.detail-title').dblclick(function () {
             $(this).hide();
@@ -202,46 +185,23 @@ $(function () {
             hideMask();
         });
     }
-
+    // 任务时间监测
     function remindCheck() {
         setInterval(function () {
-            var _iteratorNormalCompletion3 = true;
-            var _didIteratorError3 = false;
-            var _iteratorError3 = undefined;
-
-            try {
-                for (var _iterator3 = taskList.entries()[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-                    var _step3$value = _slicedToArray(_step3.value, 2),
-                        index = _step3$value[0],
-                        elem = _step3$value[1];
-
-                    if (!elem.complete && !elem.informed) {
-                        var currentTime = new Date().getTime(),
-                            taskTime = new Date(elem.date).getTime();
-                        if (currentTime > taskTime) {
-                            elem.informed = true;
-                            store.set('taskList', taskList);
-                            notice(elem);
-                        }
-                    }
-                }
-            } catch (err) {
-                _didIteratorError3 = true;
-                _iteratorError3 = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion3 && _iterator3.return) {
-                        _iterator3.return();
-                    }
-                } finally {
-                    if (_didIteratorError3) {
-                        throw _iteratorError3;
+            for (var task in taskList) {
+                if (!task.complete && !task.informed) {
+                    var currentTime = new Date().getTime(),
+                        taskTime = new Date(task.date).getTime();
+                    if (currentTime > taskTime) {
+                        task.informed = true;
+                        store.set('taskList', taskList);
+                        notice(task);
                     }
                 }
             }
         }, 1000);
     }
-
+    // 任务提醒
     function notice(item) {
         $('.hint-tone')[0].play();
         $('body').prepend($('<div class="notice"><span>\'' + item.title + '\' \u65F6\u95F4\u5DF2\u5230</span>\n                                 <button type="button">\u77E5\u9053\u4E86</button>\n                             </div>'));
