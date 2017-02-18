@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <title>To-do List</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="dist/css/main-60aa64a450.min.css">
+</head>
+
+<body>
+    <div class="notice">
+        <span></span>
+        <button type="button" class='know'>知道了</button>
+    </div>
+    <div class="container">
+        <h1>To-do List</h1>
+        <section class="add-task">
+            <form>
+                <input type="text" placeholder="e.g. 学习Vue2.0">
+                <button class="clear" type='button'>清空</button>
+                <button>添加</button>
+            </form>
+        </section>
+        <section class="task-list">
+        </section>
+        <div class="mask"></div>
+        <section class="task-detail">
+        </section>
+        <div class="alert">
+            <p></p>
+            <button type='button'>确定</button>
+            <button type='button'>取消</button>
+        </div>
+    </div>
+    <audio src='dist/alert.mp3' class='hint-tone'></audio>
+    <script src="dist/js/main-686163a400.min.js"></script>
+</body>
+
+</html>
