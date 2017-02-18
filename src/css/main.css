@@ -11,11 +11,17 @@ body {
   background: #2ca6cb; }
 
 .container {
-  max-width: 70rem;
   margin: 0 auto;
   position: relative;
-  top: 3rem; }
+  top: 3rem;
+  width: 70rem; }
 
+@media only screen and (max-width: 50em) {
+  .container {
+    width: 90%; } }
+@media only screen and (max-width: 30em) {
+  .container {
+    width: 95%; } }
 textarea,
 input,
 .task-item,
@@ -66,6 +72,16 @@ form button {
   form button:hover {
     background: #1a6177; }
 
+@media only screen and (max-width: 50em) {
+  form input {
+    width: 65%; } }
+@media only screen and (max-width: 30em) {
+  form input {
+    width: 100%; }
+  form button {
+    margin: 6px 0 0 2px;
+    float: none;
+    width: 48%; } }
 .task-list {
   margin-top: 1rem; }
   .task-list .task-item {
@@ -141,6 +157,9 @@ form button {
   .task-detail #date {
     width: 100%; }
 
+@media only screen and (max-width: 50em) {
+  .task-detail {
+    width: 70%; } }
 .notice {
   position: absolute;
   top: 0;
@@ -181,5 +200,9 @@ form button {
     outline: none; }
     .alert button:nth-child(2) {
       background: #2ca6cb; }
+
+@media only screen and (max-width: 30em) {
+  .alert {
+    width: 60%; } }
 
 /*# sourceMappingURL=main.css.map */

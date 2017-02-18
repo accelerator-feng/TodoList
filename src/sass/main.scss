@@ -15,7 +15,7 @@ $primaryColor: #2ca6cb;
     user-select: $value;
 }
 
-// 基本样式
+// 页面基本样式
 * {
     box-sizing: border-box;
 }
@@ -31,12 +31,24 @@ body {
     background: $primaryColor;
 }
 
-// 组件样式
+// 自定义页面样式
 .container {
-    max-width: 70rem;
     margin: 0 auto;
     position: relative;
     top: 3rem;
+    width: 70rem;
+}
+
+@media only screen and (max-width: 50em) {
+    .container {
+        width: 90%;
+    }
+}
+
+@media only screen and (max-width: 30em) {
+    .container {
+        width: 95%;
+    }
 }
 
 textarea,
@@ -89,6 +101,27 @@ form {
         box-shadow: 2px 2px 3px rgba(0, 0, 0, .4);
         &:hover {
             background: darken($primaryColor, 20%);
+        }
+    }
+}
+
+@media only screen and (max-width: 50em) {
+    form {
+        input {
+            width: 65%;
+        }
+    }
+}
+
+@media only screen and (max-width: 30em) {
+    form {
+        input {
+            width: 100%;
+        }
+        button {
+            margin: 6px 0 0 2px;
+            float: none;
+            width: 48%;
         }
     }
 }
@@ -179,7 +212,13 @@ form {
     }
 }
 
-// 到时提醒
+@media only screen and (max-width: 50em) {
+    .task-detail {
+        width: 70%;
+    }
+}
+
+// 任务提醒
 .notice {
     position: absolute;
     top: 0;
@@ -225,5 +264,11 @@ form {
         &:nth-child(2) {
             background: $primaryColor;
         }
+    }
+}
+
+@media only screen and (max-width: 30em) {
+    .alert {
+        width: 60%;
     }
 }
