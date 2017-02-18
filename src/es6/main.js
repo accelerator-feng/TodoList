@@ -1,49 +1,64 @@
  /* jshint esversion:6 */
+
  $(function() {
      'use strict';
-     let $mask = $('.mask'),
+     let $notice = $('.notice'),
+         $mask = $('.mask'),
+         $addTask = $('.add-task'),
+         $taskList = $('.task-list'),
          $taskDetail = $('.task-detail'),
+         $alert = $('.alert'),
          taskList = [];
      init();
-     // 监听添加任务
-     $('.add-task').submit(e => {
-         const newTask = {
-                 title: '',
-                 complete: false,
-                 desc: '',
-                 informed: false,
-                 date: '2018/01/01 00:00',
-             },
-             input = $(this).find('input');
+     // 监听任务添加
+     $addTask.submit(e => {
+         const input = $(this).find('input'),
+             title = input.val();
          e.preventDefault();
-         newTask.title = input.val();
-         if (/^\s*$/.test(newTask.title)) return;
+         if (/^\s*$/.test(title)) return; // 如果任务无内容，添加无效
          else input.val('');
+         const newTask = bulidTask(title);
          addTask(newTask);
      });
      // 监听页面点击
      $('body').click(e => {
-         const tg = e.target,
-             className = tg.className,
-             action = {
-                 delete: removeTask,
-                 detail: showDetail,
-                 mask: hideMask,
-                 checkbox: compeleteTask,
-                 clear: clear,
-             };
-         if (action[className]) action[className]($(tg).parent().data('index'));
+         const tg = $(e.target),
+             className = tg.attr('class'),
+             index = tg.parent().data('index');
+         act(className, index);
      });
      // 初始化任务列表
      function init() {
          taskList = store.get('taskList') || [];
          if (taskList.length) renderTaskList();
-         remindCheck();
+         intervalCheck();
+     }
+     // 新建任务
+     function bulidTask(title) {
+         return {
+             title,
+             complete: false,
+             desc: '',
+             informed: false,
+             date: '2018/01/01 00:00',
+         };
      }
      // 添加任务
      function addTask(newTask) {
          taskList.unshift(newTask);
          refresh();
+     }
+     // 响应点击事件
+     function act(className, index) {
+         const action = {
+             delete: removeTask,
+             detail: showDetail,
+             mask: hideMask,
+             checkbox: compeleteTask,
+             clear: clear,
+             know: hideNotice,
+         };
+         if (action[className]) action[className](index);
      }
      // 清空任务列表
      function clear() {
@@ -54,79 +69,74 @@
          };
          myAlert('清空所有任务', callback);
      }
-    // 删除任务
+     // 删除任务
      function removeTask(index) {
          const callback = e => {
+             console.log(1);
              taskList.splice(e.data.index, 1);
              rmAlert();
              refresh();
          };
          myAlert(`删除 '${taskList[index].title}' `, callback, { index });
      }
-    // 自定义alert
+     // 模态框
      function myAlert(text, callback, data = {}) {
-         const alertText = `<div class="alert">
-                                <p class='alertText'>确定${text}?</p>
-                                <button class='confirm' type='button'>确定</button>
-                                <button class='cancel' type='button'>取消</button>
-                            </div>`;
-         $mask.show();
-         $('.container').append($(alertText));
-         $('.confirm').click(data, callback);
-         $('.cancel').click(rmAlert);
+         $alert.show()
+             .find('p').html(`确定${text}?`)
+             .next().one('click', data, callback)
+             .next().one('click', rmAlert);
      }
-    // 显示任务描述，日期
+     // 显示任务描述，日期
      function showDetail(index) {
          renderTaskDetail(index);
          $mask.show();
          $taskDetail.show();
      }
-    // 隐藏遮罩层
+     // 隐藏遮罩层
      function hideMask() {
          $mask.hide();
          $taskDetail.hide().html('');
          rmAlert();
      }
-    // 隐藏alert
+     // 隐藏模态框
      function rmAlert() {
          $mask.hide();
-         $('.alert').remove();
+         $alert.hide();
      }
-    // 标记任务完成
+     // 标记任务完成
      function compeleteTask(index) {
          let i = 0,
              task = taskList[index];
-         if (task.complete) { task.complete = false; } 
-         else {
+         if (task.complete) { task.complete = false; } else {
              task.complete = true;
              taskList.splice(index, 1);
-             for (const elem in taskList) {
+             taskList.forEach((elem) => {
                  if (!elem.complete) i++;
-             }
+             });
              taskList.splice(i, 0, task);
          }
          refresh();
      }
-    // 更新localstorage
+     // 更新localstorage
      function refresh() {
          store.set('taskList', taskList);
          renderTaskList();
      }
-    // 渲染任务列表
+     // 渲染任务列表
      function renderTaskList() {
-         let listA = '',
-             listB = '',
+         let incompleteList = '',
+             completeList = '',
              list = '';
          for (const [index, elem] of taskList.entries()) {
-             if (!elem.complete) { listA += taskTemplate(elem, index); } 
-             else { listB += taskTemplate(elem, index); }
+             if (!elem.complete) { incompleteList += taskTemplate(elem, index); } 
+             else { completeList += taskTemplate(elem, index); }
          }
-         list = listA + listB;
-         $('.task-list').html('').append($(list));
-         $('task-item').removeClass('complete');
+         list = incompleteList + completeList;
+         $taskList.html('').append($(list))
+             .children().removeClass('complete');
          $("[checked]").parent().addClass('complete');
      }
-    // 任务模板
+     // 任务模板
      function taskTemplate(item, index) {
          const checked = item.complete ? "checked" : '',
              template = `<div class='task-item' data-index=${index}>
@@ -137,7 +147,7 @@
                          </div>`;
          return template;
      }
-    // 任务详情模板
+     // 任务详情模板
      function renderTaskDetail(index) {
          const item = taskList[index],
              template = `<div class='detail-title'>${item.title}</div>
@@ -146,11 +156,11 @@
                          <span>提醒时间</span>
                          <input type='text' id='date' value='${item.date}'>
                          <button type='button' class='update'>更新</button>`;
-         $taskDetail.append($(template)).css('top', index * 44 + 44 + 'px');
-         $('#date').datetimepicker();
+         $taskDetail.append($(template)).css('top', index * 3.9 + 4.4 + 'rem')
+             .find('#date').datetimepicker();
          update(item);
      }
-    // 修改任务
+     // 监听修改任务
      function update(item) {
          $('.detail-title').dblclick(function() {
              $(this).hide();
@@ -166,28 +176,32 @@
              hideMask();
          });
      }
-    // 任务时间监测
-     function remindCheck() {
+     // 间歇遍历任务
+     function intervalCheck() {
          setInterval(() => {
-             for (const task in taskList) {
-                 if (!task.complete && !task.informed) {
-                     const currentTime = (new Date()).getTime(),
-                         taskTime = (new Date(task.date)).getTime();
-                     if (currentTime > taskTime) {
-                         task.informed = true;
-                         store.set('taskList', taskList);
-                         notice(task);
-                     }
-                 }
-             }
+             taskList.forEach(check);
          }, 1000);
      }
-    // 任务提醒
+     // 判断任务是否到时
+     function check(item) {
+         if (!item.complete && !item.informed) {
+             const currentTime = (new Date()).getTime(),
+                 taskTime = (new Date(item.date)).getTime();
+             if (currentTime > taskTime) {
+                 item.informed = true;
+                 store.set('taskList', taskList);
+                 notice(item);
+             }
+         }
+     }
+     // 任务提醒
      function notice(item) {
-         $('.hint-tone')[0].play();
-         $('body').prepend($(`<div class="notice"><span>'${item.title}' 时间已到</span>
-                                 <button type="button">知道了</button>
-                             </div>`));
-         $('.notice button').click(function() { $(this).parent().remove(); });
+         $('audio')[0].play();
+         $notice.show()
+             .find('span').append(`'${item.title}' 时间已到 `);
+     }
+     // 隐藏提醒
+     function hideNotice() {
+         $notice.hide().find('span').html('');
      }
  });

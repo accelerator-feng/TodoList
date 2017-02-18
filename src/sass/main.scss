@@ -64,6 +64,7 @@ input[type=text] {
 button {
     @include userSelect(none);
 }
+
 // 标题
 h1 {
     font-size: 3rem;
@@ -129,8 +130,8 @@ form {
             width: 80%;
             height: 1px;
             background: #888;
-            top: -11px;
-            left: 20px;
+            top: -1.1rem;
+            left: 2rem;
             position: relative;
             display: block;
             pointer-events: none;
@@ -186,7 +187,8 @@ form {
     padding: 0.5rem;
     text-align: center;
     width: 100%;
-    height: 40px;
+    height: 4rem;
+    display: none;
     span {
         vertical-align: middle;
     }
@@ -202,7 +204,7 @@ form {
     }
 }
 
-// 自定义alert
+// 模态框
 .alert {
     position: fixed;
     width: 30rem;
@@ -213,14 +215,15 @@ form {
     bottom: 0;
     right: 0;
     margin: auto;
+    display: none;
     border-radius: 0.5rem;
     text-align: center;
     button {
         margin: 0 1rem;
         cursor: pointer;
         outline: none;
-    }
-    .confirm {
-        background: $primaryColor;
+        &:nth-child(2) {
+            background: $primaryColor;
+        }
     }
 }

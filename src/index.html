@@ -5,12 +5,18 @@
     <meta charset="UTF-8">
     <title>To-do List</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <!-- build:css css/main.min.css -->
     <link rel="stylesheet" type="text/css" href="css/normalize.css">
     <link rel="stylesheet" type="text/css" href="css/jquery.datetimepicker.min.css">
     <link rel="stylesheet" type="text/css" href="css/main.css">
+    <!-- endbuild -->
 </head>
 
 <body>
+    <div class="notice">
+        <span></span>
+        <button type="button" class='know'>知道了</button>
+    </div>
     <div class="container">
         <h1>To-do List</h1>
         <section class="add-task">
@@ -25,12 +31,19 @@
         <div class="mask"></div>
         <section class="task-detail">
         </section>
+        <div class="alert">
+            <p></p>
+            <button type='button'>确定</button>
+            <button type='button'>取消</button>
+        </div>
     </div>
     <audio src='alert.mp3' class='hint-tone'></audio>
+    <!-- build:js js/main.min.js -->
     <script type="text/javascript" src="js/jquery.min.js"></script>
     <script type="text/javascript" src="js/jquery.datetimepicker.full.min.js"></script>
     <script type="text/javascript" src="js/store.min.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
+    <!-- endbuild -->
 </body>
 
 </html>
